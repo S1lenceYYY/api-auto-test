@@ -1,9 +1,8 @@
 import logging
-from logging import info
 
 import allure
-import requests
 import pymysql
+import requests
 
 from config.config import *
 
@@ -11,22 +10,22 @@ from config.config import *
 @allure.step("2.发送HTTP请求")
 def send_http_request(**request_data):
     res = requests.request(**request_data)
-    logging,info(f"2.发送HTTP请求,响应文本:{res.json()}")
+    logging.info(f"2.发送HTTP请求,响应文本:{res.json()}")
     return res
 
 
-def send_jdbc_request(sql,index=0):
-    conn = pymysql.connect(  # 开桥连接
+def send_jdbc_request(sql, index=0):
+    conn = pymysql.connect(
         host=DB_HOST,
         port=DB_PORT,
         user=DB_USER,
         password=DB_PASSWORD,
         database=DB_NAME,
-        charset=DB_CHARSET
+        charset=DB_CHARSET,
     )
-    cur = conn.cursor()  # 把驴牵出来
+    cur = conn.cursor()
     cur.execute(sql)
-    result = cur.fetchone()  # 拿取一行结果
-    cur.close()  # 把驴牵回去
+    result = cur.fetchone()
+    cur.close()
     conn.close()
     return result[index]
