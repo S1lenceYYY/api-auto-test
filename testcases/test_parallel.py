@@ -33,5 +33,3 @@ class TestRunnerParallel:
 
         http_assert(case, resp, extract)
         jdbc_assert(case, extract)
-        logging.info(f"已提取的id{task_id_list}")
-        logging.info(f"全局变量{extract}")

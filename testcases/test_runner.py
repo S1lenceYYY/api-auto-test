@@ -25,7 +25,6 @@ class TestRunner:
         case = render_obj(case, extract)
 
         allure_init(case)
-        logging.info(f"0.用例ID:{case['id']}  模块:{case['feature']}  场景:{case['story']}  标题:{case['title']}")
 
         request_data = analyse_case(case)
         res = send_http_request(**request_data)
@@ -36,3 +35,6 @@ class TestRunner:
 
         http_assert(case, res, request_data)
         jdbc_assert(case, extract)
+
+        # logging.info(f"已提取的id{task_id_list}")
+        # logging.info(f"全局变量{extract}")
