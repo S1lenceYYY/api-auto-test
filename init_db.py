@@ -58,7 +58,7 @@ def main():
     cur.execute(f"""
     CREATE TABLE IF NOT EXISTS {task} (
         id INT PRIMARY KEY AUTO_INCREMENT,
-        task_name VARCHAR(11) NOT NULL,
+        task_name VARCHAR(100) NOT NULL,
         description TEXT,
         assign_user VARCHAR(50),
         deadline DATETIME,

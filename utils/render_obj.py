@@ -1,10 +1,14 @@
-from jinja2 import Template
+from jinja2 import Environment, StrictUndefined
 
-def render_obj(obj,context):
+env = Environment(undefined=StrictUndefined)
 
+
+def render_obj(obj, context):
     if isinstance(obj, str):
-        # 字符串才做jinja渲染
-        return Template(obj).render(**context)
+        try:
+            return env.from_string(obj).render(**context)
+        except Exception as e:
+            raise ValueError(f"模板渲染失败：{obj}，错误：{e}")
     elif isinstance(obj, dict):
         new_dict = {}
         for k, v in obj.items():
@@ -14,10 +18,6 @@ def render_obj(obj,context):
                 new_dict[k] = render_obj(v, context)
         return new_dict
     elif isinstance(obj, list):
-        new_list = []
-        for item in obj:
-            new_list.append(render_obj(item, context))
-        return new_list
+        return [render_obj(item, context) for item in obj]
     else:
-        # int bool None float，直接原样返回
         return obj
