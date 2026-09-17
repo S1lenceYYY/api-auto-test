@@ -30,4 +30,5 @@ fi
 END=$(date +%s)
 log "===== 测试完成，总耗时 $((END - START)) 秒 ====="
 log "报告位置：$REPORT_DIR"
-log "查看报告：allure open $REPORT_DIR"
+log "本地查看：tar 打包下载后 allure open"
+log "云端查看：allure serve $REPORT_DIR -h 0.0.0.0 -p 4040"
