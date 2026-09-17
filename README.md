@@ -181,7 +181,6 @@ allure serve ./report/json_parallel
 apt update
 apt install python3 python3-pip python3.10-venv git vim -y
 apt install mysql-server -y
-apt install default-jre -y
 ```
 ### 安装allure命令行
  
