@@ -1,10 +1,10 @@
 # 任务管理系统 · 接口自动化测试框架
 
-基于 Python + Pytest 的接口自动化测试框架。被测对象为自建的 Flask 简易后端，用于可控构造测试场景；框架支持 Excel 数据驱动、HTTP + 数据库双重断言、串行与并行执行、Allure 可视化报告。
+基于 Python + Pytest 的接口自动化测试框架。被测对象为自建的 Flask 简易后端，用于可控构造测试场景；框架支持 Excel 数据驱动、HTTP + 数据库双重断言、串行与并行执行、Allure 可视化报告，并已部署至阿里云服务器，支持一键部署与测试
 
 ## 技术栈
 
-Python 3.11+ | Pytest | pytest-xdist | Allure-Pytest | Requests | Jinja2 | openpyxl | pymysql
+Python 3.11+ | Pytest | pytest-xdist | Allure-Pytest | Requests | Jinja2 | openpyxl | pymysql | Shell | Linux
 
 ## 核心亮点
 
@@ -14,6 +14,7 @@ Python 3.11+ | Pytest | pytest-xdist | Allure-Pytest | Requests | Jinja2 | openp
 - **动态渲染**：用例中的 `{{token}}`、`{{ID}}` 等占位符在执行时动态替换，解决接口间参数传递问题，让链路用例复用同一份 Excel。
 - **场景分层**：串行链路、独立正向+反向、边界异常三类用例分开维护，串行用例保证依赖，并行用例提升速度，边界用例展示测试设计。
 - **报告可视化**：接入 Allure，用例步骤、请求响应、SQL 断言详情都可在报告中追溯。
+- **云端部署 + 一键脚本**：部署至阿里云 Ubuntu，编写 Shell 脚本实现部署、测试自动化 
 
 ## 项目结构
 
@@ -26,6 +27,13 @@ jkzdh封装/
 │   └── config.py                   # 读 .env，暴露数据库/接口常量
 ├── data/                           # 测试数据
 │   └── 用例.xlsx                   # 3 个 Sheet：串行 / 并行 / 边界
+├── docs/                           # 项目文档
+│   ├── allure_serial.png           # 串行报告截图（云端）
+│   └── allure_parallel.png         # 并行报告截图（云端）
+├── scripts/                        # 自动化脚本
+│   ├── init.sh                     # 首次初始化 
+│   ├── deploy.sh                   # 日常部署             
+│   └──  run_test.sh                # 测试 + 报告            
 ├── testcases/                      # pytest 用例代码
 │   ├── test_runner.py              # 串行链路
 │   └── test_parallel.py            # 独立正向并行
@@ -66,8 +74,9 @@ jkzdh封装/
 
 - Python 3.11+
 - MySQL 8.0+
+- Allure 命令行（生成 HTML 报告）
 
-## 快速开始
+## 快速开始（本地部署）
 
 ### 1. 安装依赖
 
@@ -163,10 +172,68 @@ allure serve ./report/json_report
 # 并行
 allure serve ./report/json_parallel
 ```
+## 云端部署（阿里云 Ubuntu）
+本地跑通后，我把框架部署到了阿里云 Ubuntu 服务器，并编写 Shell 脚本实现一键部署与测试
+
+### 环境准备
+
+```bash
+apt update
+apt install python3 python3-pip python3.10-venv git vim -y
+apt install mysql-server -y
+apt install default-jre -y
+```
+### 安装allure命令行
+ 
+```bash
+   apt install default-jre -y
+   cd /opt
+   wget https://repo1.maven.org/maven2/io/qameta/allure/allure-commandline/2.27.0/allure-commandline-2.27.0.tgz -O allure-2.27.0.tgz
+   tar -zxvf allure-2.27.0.tgz
+   ln -s /opt/allure-2.27.0/bin/allure /usr/bin/allure
+   allure --version
+```
+
+### 一键脚本
+
+| 脚本 | 职责 |
+|---|---|
+| `scripts/init.sh` | 首次初始化：建虚拟环境、装依赖、初始化数据库 |
+| `scripts/deploy.sh` | 日常部署：拉代码、重启后端、健康检查 |
+| `scripts/run_test.sh` | 跑测试 + 生成 Allure 报告，支持串行/并行 |
+
+### 使用方式
+
+```bash
+chmod 755 scripts/*.sh
+
+./scripts/init.sh                  # 首次初始化
+./scripts/deploy.sh                # 日常部署
+./scripts/run_test.sh              # 串行测试 + 报告
+./scripts/run_test.sh parallel     # 并行测试 + 报告
+```
+
+### 部署流程
+
+```
+SSH 登录 → git clone → 配置 .env → init.sh → deploy.sh → run_test.sh
+```
+
+## Allure 报告示例
+
+### 串行链路（14 条）
+
+![串行报告](docs/allure_serial.png)
+
+### 并行独立用例（22 条）
+
+![并行报告](docs/allure_parallel.png)
 
 ## 踩坑记录
 
-**1. 并行数据清理不干净**
+### 一、框架设计
+
+#### 1. 并行数据清理不干净
 
 **现象**：并行执行时，数据库残留用例产生的数据，清不干净。
 
@@ -176,27 +243,7 @@ allure serve ./report/json_parallel
 
 **经验**：fixture scope 要和依赖关系匹配。有依赖用 `class`，独立用 `function`。
 
-**2. 配置重复与密码明文**
-
-**现象**：数据库配置在 `config/config.py` 和 `backend/settings.py` 各写一份，密码明文。
-
-**排查**：改数据库时经常改一处忘另一处，上传 Git 还会泄露密码。
-
-**解决**：统一抽到根目录 `.env`，两处从环境变量读取。`.env` 不提交 Git，仓库只保留 `.env.example` 作为模板。
-
-**经验**：配置和代码分离，敏感信息走环境变量，仓库只提交模板文件。
-
-**3. 字符串转字典：从 eval 到 json.loads**
-
-**现象**：`analyse_case` 用 `eval` 把 Excel 里的 JSON 字符串转字典，能跑通。
-
-**排查**：后来了解到 `eval` 有两个问题：会执行任意 Python 代码，有注入风险；JSON 格式错时报的是 Python 语法错，定位不到具体哪一行。
-
-**解决**：改用 `json.loads`，只解析 JSON，不执行代码，安全；格式错时报错明确，如 `Expecting value: line 1 column 1`，能直接定位。
-
-**经验**：用正确的工具做正确的事。字符串转字典用 `json.loads`，不用 `eval`。
-
-**4. 提取和断言的执行顺序错误**
+#### 2. 提取和断言的执行顺序错误
 
 **现象**：JDBC 数据库断言报 SQL 语法错误。
 
@@ -206,12 +253,38 @@ allure serve ./report/json_parallel
 
 **经验**：模板变量遵循「先写入，后消费」。变量取不到，先看渲染后的实际语句。
 
+### 二、配置与安全
+
+#### 3. 配置重复与密码明文
+
+**现象**：数据库配置在 `config/config.py` 和 `backend/settings.py` 各写一份，密码明文。
+
+**排查**：改数据库时经常改一处忘另一处，上传 Git 还会泄露密码。
+
+**解决**：统一抽到根目录 `.env`，两处从环境变量读取。`.env` 不提交 Git，仓库只保留 `.env.example` 作为模板。
+
+**经验**：配置和代码分离，敏感信息走环境变量，仓库只提交模板文件。
+
+### 三、部署环境
+
+#### 4. 本地跑通、云端报 Data too long
+
+**现象**：本地 22 条全过，云端 2 条报 `pymysql.err.DataError: (1406, "Data too long for column 'task_name'")`。
+
+**排查**：测试侧 `JSONDecodeError` → 后端返回非 JSON；查 `backend.log` 定位到 `Data too long`；对比两边表结构，本地 `VARCHAR(100)`，云端 `VARCHAR(11)`。
+
+**根因**：`init_db.py` 字段长度写错，`CREATE TABLE IF NOT EXISTS` 不修改已存在的表，本地旧结构掩盖了错误。
+
+**解决**：统一 `init_db.py` 定义，云端 `DROP TABLE` 后重建。
+
+**经验**：本地跑通 ≠ 云端跑通，环境一致性必须显式验证。
+
 ## 注意事项
 
 - 后端启动和测试运行需要在两个不同的终端。
 - 数据库表名默认为 `task` 和 `users`，当前在后端 SQL 和 Excel 用例中固定。如需修改，请同步修改后端每个接口的 SQL 语句和 Excel 用例中数据库断言里的表名。
 - `.env` 含密码，不要提交到 Git，仓库中只保留 `.env.example`。
-- 若使用 PyCharm，请确认项目解释器与终端 pip 指向同一个 Python 环境。
+- 云端部署时，Shell 脚本换行符必须是 LF，否则报 `bad interpreter: /bin/bash^M`。
 
 ## 常见问题
 
@@ -219,6 +292,7 @@ allure serve ./report/json_parallel
 |------|----------|
 | 数据库连接失败 | 检查 `.env` 中账号密码、MySQL 是否启动、端口是否被占用 |
 | 表不存在 | 是否执行过 `python init_db.py` |
-| 登录失败 | users 表中是否有 LOGIN_USER 账号，`.env` 与后端 SECRET_KEY 是否一致 |
+| 登录失败 | `users` 表中是否有 `LOGIN_USER` 账号，`.env` 与后端 `SECRET_KEY` 是否一致 |
 | 并行报错 | 是否已安装 pytest-xdist |
-| IDE 提示包未安装 | 确认 PyCharm 解释器与终端 pip 指向同一环境 |
+| 云端脚本找不到 venv | 确认 `cd "$(dirname "$0")/.."` 正确，或手动 `cd` 到项目根目录 |
+| 云端 `git pull` 冲突 | 用 `git fetch --all && git reset --hard origin/main` 强制同步 |
