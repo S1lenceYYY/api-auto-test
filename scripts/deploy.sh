@@ -2,7 +2,7 @@
 set -e
 
 cd "$(dirname "%0")/.."
-source  venv/bin/active
+source  venv/bin/activate
 
 log(){
   echo "[$(date '+%Y-%m-%d %H:%M:S')] $1"
