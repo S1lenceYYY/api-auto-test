@@ -21,7 +21,7 @@ pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple -q
 
 log "------3.重启后端------"
 pkill -f simulate_back || true
-nohup python backend/simulate_backe.py > simulate.log 2>&1 &
+nohup python backend/simulate_back.py > backend.log 2>&1 &
 sleep 2
 
 log "------4.健康检查------"
