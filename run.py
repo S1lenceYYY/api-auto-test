@@ -7,7 +7,7 @@ if __name__ == '__main__':
     # ====================== 串行执行【默认启用】 ======================
     pytest.main([
         "-vs",
-        "./testcases/test_runner.py",
+        "testunion/flask/test_runner.py",
         "--alluredir", "./report/json_report",
         "--clean-alluredir",
         "--allure-no-capture",
@@ -22,7 +22,7 @@ if __name__ == '__main__':
     # pytest.main([
     #     "-vs",
     #     "-n", "4",
-    #     "./testcases/test_parallel.py",
+    #     "testunion/flask/test_parallel.py",
     #     "--alluredir", "./report/json_parallel",
     #     "--clean-alluredir",
     #     "--allure-no-capture",

@@ -35,10 +35,17 @@ jkzdh封装/
 │   ├── deploy.sh                   # 日常部署             
 │   └──  run_test.sh                # 测试 + 报告            
 ├── testcases/                      # pytest 用例代码
-│   ├── test_runner.py              # 串行链路
-│   └── test_parallel.py            # 独立正向并行
+│   ├── falsk                       # Flask 项目测试
+│   │   ├──conftest.py              # Flask 专属 Fixture
+│   │   ├──test_parallel.py         # 并行用例（无依赖，可 xdist 多进程）
+│   │   └──test_runner.py           # 串行用例（有链路依赖，按顺序执行）
+│   └── test_parallel.py            # JavaWeb 项目测试用例
+│       ├── conftest.py             # JavaWeb 专属 Fixture（多角色 Session、数据清理）
+│       ├──test_javaweb.py          # JavaWeb 用例（登录、越权、双重断言）
+│       └──
 ├── utils/                          # 工具包
 │   ├── excel_utils.py              # Excel 读取
+│   ├── auth_utils.py               # 鉴权工具模块(简化夹具)
 │   ├── allure_utils.py             # Allure 报告步骤与附件封装
 │   ├── analyse_case.py             # 解析用例，生成请求参数
 │   ├── extractor.py                # 响应提取：JSONPath / SQL / 参数

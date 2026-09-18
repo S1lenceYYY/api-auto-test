@@ -18,11 +18,11 @@ def json_extractor(case,extract,res):
 
 
 
-def jdbc_extractor(case,extract):
+def jdbc_extractor(case,extract,db_config):
     if case["sqlExData"]:
         with allure.step("3.JDBC提取"):
             for key, value in json.loads(case["sqlExData"]).items():
-                value_ = send_jdbc_request(value)
+                value_ = send_jdbc_request(value,db_config)
                 extract[key] = value_
                 logging.info(f"3.JDBC提取,根据{case['sqlExData']}提取数据，此时全局变量为:{extract}")
 

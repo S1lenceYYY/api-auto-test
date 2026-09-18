@@ -64,7 +64,7 @@ def login():
 
     conn = get_db_conn()
     cur = conn.cursor(pymysql.cursors.DictCursor)
-    cur.execute("SELECT * FROM users WHERE username=%s AND password=%s", (username, password))
+    cur.execute(f"SELECT * FROM {FLASK_USER_TABLE} WHERE username=%s AND password=%s", (username, password))
     user_info = cur.fetchone()
     cur.close()
     conn.close()
@@ -97,7 +97,7 @@ def add_task():
 
     conn = get_db_conn()
     cur = conn.cursor()
-    sql = "INSERT INTO task(task_name, description, assign_user, deadline) VALUES(%s,%s,%s,%s)"
+    sql = f"INSERT INTO {FLASK_TASK_TABLE}(task_name, description, assign_user, deadline) VALUES(%s,%s,%s,%s)"
     cur.execute(sql, (task_name, description, assign_user, deadline))
     conn.commit()
     new_task_id = cur.lastrowid
@@ -115,7 +115,7 @@ def get_task(tid):
 
     conn = get_db_conn()
     cur = conn.cursor(pymysql.cursors.DictCursor)
-    cur.execute("SELECT * FROM task WHERE id=%s", (tid,))
+    cur.execute(f"SELECT * FROM {FLASK_TASK_TABLE} WHERE id=%s", (tid,))
     row = cur.fetchone()
     cur.close()
     conn.close()
@@ -137,7 +137,7 @@ def list_task():
 
     conn = get_db_conn()
     cur = conn.cursor(pymysql.cursors.DictCursor)
-    cur.execute("SELECT * FROM task LIMIT %s,%s", (offset, size))
+    cur.execute(f"SELECT * FROM {FLASK_TASK_TABLE} LIMIT %s,%s", (offset, size))
     rows = cur.fetchall()
     cur.close()
     conn.close()
@@ -164,14 +164,14 @@ def update_task():
 
     conn = get_db_conn()
     cur = conn.cursor()
-    cur.execute("SELECT id FROM task WHERE id=%s", (tid,))
+    cur.execute(f"SELECT id FROM {FLASK_TASK_TABLE} WHERE id=%s", (tid,))
     exist = cur.fetchone()
     if not exist:
         cur.close()
         conn.close()
         return jsonify({"code": 404, "msg": "任务不存在"}), 404
 
-    sql = "UPDATE task SET task_name=%s, description=%s, assign_user=%s, deadline=%s WHERE id=%s"
+    sql = f"UPDATE {FLASK_TASK_TABLE} SET task_name=%s, description=%s, assign_user=%s, deadline=%s WHERE id=%s"
     cur.execute(sql, (task_name, description, assign_user, deadline, tid))
     conn.commit()
     cur.close()
@@ -198,14 +198,14 @@ def change_status():
 
     conn = get_db_conn()
     cur = conn.cursor()
-    cur.execute("SELECT id FROM task WHERE id=%s", (tid,))
+    cur.execute(f"SELECT id FROM {FLASK_TASK_TABLE} WHERE id=%s", (tid,))
     exist = cur.fetchone()
     if not exist:
         cur.close()
         conn.close()
         return jsonify({"code": 404, "msg": "任务不存在"}), 404
 
-    cur.execute("UPDATE task SET status=%s WHERE id=%s", (status, tid))
+    cur.execute(f"UPDATE {FLASK_TASK_TABLE} SET status=%s WHERE id=%s", (status, tid))
     conn.commit()
     cur.close()
     conn.close()
@@ -221,14 +221,14 @@ def delete_task(tid):
 
     conn = get_db_conn()
     cur = conn.cursor()
-    cur.execute("SELECT id FROM task WHERE id=%s", (tid,))
+    cur.execute(f"SELECT id FROM {FLASK_TASK_TABLE} WHERE id=%s", (tid,))
     exist = cur.fetchone()
     if not exist:
         cur.close()
         conn.close()
         return jsonify({"code": 404, "msg": "任务不存在"}), 404
 
-    cur.execute("DELETE FROM task WHERE id=%s", (tid,))
+    cur.execute(f"DELETE FROM {FLASK_TASK_TABLE} WHERE id=%s", (tid,))
     conn.commit()
     cur.close()
     conn.close()

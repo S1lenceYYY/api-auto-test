@@ -14,14 +14,14 @@ def send_http_request(**request_data):
     return res
 
 
-def send_jdbc_request(sql, index=0):
+def send_jdbc_request(sql,db_config, index=0):
     conn = pymysql.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        user=DB_USER,
-        password=DB_PASSWORD,
-        database=DB_NAME,
-        charset=DB_CHARSET,
+        host=db_config["host"],
+        port=db_config["port"],
+        user=db_config["user"],
+        password=db_config["password"],
+        database=db_config["database"],
+        charset=db_config["charset"],
     )
     cur = conn.cursor()
     cur.execute(sql)

@@ -7,9 +7,9 @@ from config.config import BASE_URL
 
 
 @allure.step("1.解析请求函数")
-def analyse_case(case):
+def analyse_case(case,URL_BASE=BASE_URL):
     method = case["method"]
-    url = BASE_URL + case["path"]
+    url = URL_BASE + case["path"]
     headers = json.loads(case["headers"], strict=False) if isinstance(case["headers"], str) and case["headers"].strip() else None
     params = json.loads(case["params"], strict=False) if isinstance(case["params"], str) and case["params"].strip() else None
     data_ = json.loads(case["data"], strict=False) if isinstance(case["data"], str) and case["data"].strip() else None

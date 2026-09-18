@@ -64,7 +64,7 @@ def http_assert(case, res, request_data=None):
         raise e
 
 
-def jdbc_assert(case, extract):
+def jdbc_assert(case, extract,db_config):
     if not case.get("sql_check") or case.get("sql_expect") in (None, ""):
         return
 
@@ -72,7 +72,7 @@ def jdbc_assert(case, extract):
     result = None
     with allure.step("4.数据库响应断言"):
         real_sql = Template(case.get("sql_check")).render(**extract)
-        result = send_jdbc_request(real_sql)
+        result = send_jdbc_request(real_sql,db_config)
 
         allure.attach(
             f"SQL: {real_sql}\n"
