@@ -12,7 +12,8 @@ def render_obj(obj, context):
     elif isinstance(obj, dict):
         new_dict = {}
         for k, v in obj.items():
-            if k == "sql_check":
+            if k == "sql_check" or k=="sql_expect":
+
                 new_dict[k] = v
             else:
                 new_dict[k] = render_obj(v, context)

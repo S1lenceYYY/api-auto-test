@@ -27,7 +27,7 @@ class TestRunner:
 
         allure_init(case)
 
-        request_data = analyse_case(case,BASE_URL)
+        request_data = analyse_case(case,extract,BASE_URL)
         res = send_http_request(**request_data)
 
         json_extractor(case, extract, res)

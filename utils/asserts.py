@@ -65,28 +65,29 @@ def http_assert(case, res, request_data=None):
 
 
 def jdbc_assert(case, extract,db_config):
-    if not case.get("sql_check") or case.get("sql_expect") in (None, ""):
+    if case.get("sql_check") in (None, "", "None") or case.get("sql_expect") in (None, "", "None"):
         return
 
     real_sql = None
     result = None
     with allure.step("4.数据库响应断言"):
         real_sql = Template(case.get("sql_check")).render(**extract)
+        real_check = Template(str(case.get("sql_expect"))).render(**extract)
         result = send_jdbc_request(real_sql,db_config)
 
         allure.attach(
             f"SQL: {real_sql}\n"
-            f"预期: {case['sql_expect']}\n"
+            f"预期: {real_check}\n"
             f"实际: {result}",
             name="SQL断言详情",
             attachment_type=allure.attachment_type.TEXT,
         )
 
-        logging.info(f"4.JDBC: 实际({result}) == 预期({case['sql_expect']})")
+        logging.info(f"4.JDBC: 实际({result}) == 预期({real_check})")
 
         try:
-            assert str(result) == str(case["sql_expect"]), (
-                f"数据库校验失败：\n实际: {result}\n预期: {case['sql_expect']}"
+            assert str(result) == str(real_check), (
+                f"数据库校验失败：\n实际: {result}\n预期: {real_check}"
             )
         except AssertionError as e:
             allure.attach(

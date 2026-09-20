@@ -26,12 +26,13 @@ class TestRunner:
         extract = TestRunner.all
         extract.update(get_session)
         case = render_obj(case, extract)
+        logging.info(f"渲染后的：   {case}")
 
         allure_init(case)
 
-        request_data = analyse_case(case,BASE_URL_JAVA)
+        request_data = analyse_case(case,extract,BASE_URL_JAVA)
         res = send_http_request(**request_data)
-
+        request_data.pop("session", None)
         json_extractor(case, extract, res)
         jdbc_extractor(case, extract,JAVA_DB)
         # task_id_extractor(task_id_list, extract)

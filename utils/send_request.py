@@ -9,7 +9,11 @@ from config.config import *
 
 @allure.step("2.发送HTTP请求")
 def send_http_request(**request_data):
-    res = requests.request(**request_data)
+    session=request_data.pop("session")
+    if isinstance(session,requests.Session):
+        res=session.request(**request_data)
+    else:
+        res = requests.request(**request_data)
     logging.info(f"2.发送HTTP请求,响应文本:{res.json()}")
     return res
 

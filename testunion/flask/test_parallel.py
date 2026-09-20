@@ -1,7 +1,7 @@
 import logging
 import pytest
 
-from config.config import FLASK_DB
+from config.config import FLASK_DB, BASE_URL
 from utils.allure_utils import allure_init
 from utils.extractor import json_extractor, jdbc_extractor, task_id_extractor
 from utils.excel_utils import read_excel
@@ -26,7 +26,7 @@ class TestRunnerParallel:
         allure_init(case)
         logging.info(f"0.用例ID:{case['id']}  模块:{case['feature']}  场景:{case['story']}  标题:{case['title']}")
 
-        request_data = analyse_case(case)
+        request_data = analyse_case(case,extract,BASE_URL)
         resp = send_http_request(**request_data)
         json_extractor(case, extract, resp)
         jdbc_extractor(case, extract,FLASK_DB)

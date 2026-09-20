@@ -1,7 +1,8 @@
 import allure
 import requests
 import pymysql
-from config.config import LOGIN_USER_JAVA, BASE_URL_JAVA, BASE_URL, LOGIN_USER_FLASK, FLASK_DB, FLASK_TASK_TABLE
+from config.config import LOGIN_USER_JAVA, BASE_URL_JAVA, BASE_URL, LOGIN_USER_FLASK, FLASK_DB, FLASK_TASK_TABLE, \
+    JAVA_DB, CLEAN_TABLES, CLEAN_MARK
 
 
 def create_java_sessions():
@@ -25,7 +26,7 @@ def create_flask_token():
         assert res_json["code"] == 200, f"登录业务失败，msg:{res_json.get('msg')}"
     return res_json["data"]["token"]
 
-def clean_db_flask(task_id_list):
+def clean_db(task_id_list):
     if not task_id_list:
         return
     conn = pymysql.connect(
@@ -41,5 +42,22 @@ def clean_db_flask(task_id_list):
         for tid in task_id_list:
             cur.execute(f"DELETE FROM {FLASK_TASK_TABLE} WHERE id=%s", (tid,))
     conn.commit()
+    cur.close()
+    conn.close()
+
+def clean_java_tables():
+    conn = pymysql.connect(
+        host=JAVA_DB["host"],
+        port=JAVA_DB["port"],
+        user=JAVA_DB["user"],
+        password=JAVA_DB["password"],
+        database=JAVA_DB["database"],
+        charset=JAVA_DB["charset"],
+    )
+    cur = conn.cursor()
+    with allure.step("后置：删除本次用例产生的带标记的数据"):
+        for table, field in CLEAN_TABLES.items():
+            cur.execute(f"DELETE FROM {table} WHERE {field} LIKE %s", (f"{CLEAN_MARK}%",))
+            conn.commit()
     cur.close()
     conn.close()

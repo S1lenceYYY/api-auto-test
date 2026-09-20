@@ -1,8 +1,8 @@
 
 import pytest
 
-
-from utils.auth_utils import create_flask_token, clean_db_flask
+from config.config import FLASK_DB
+from utils.auth_utils import create_flask_token, clean_db
 
 
 @pytest.fixture(scope="session")
@@ -24,7 +24,7 @@ def clean_db_by_id():
     # 串行：class 级后置清理，整个 class 跑完统一删除
     task_id_list = []
     yield task_id_list
-    clean_db_flask(task_id_list)
+    clean_db(task_id_list)
 
 
 @pytest.fixture(scope="function")
@@ -32,4 +32,4 @@ def clean_db_by_id_p():
     #并行：function 级后置清理，每条用例独立删除
     task_id_list = []
     yield task_id_list
-    clean_db_flask(task_id_list)
+    clean_db(task_id_list)
