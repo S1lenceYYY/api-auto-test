@@ -58,6 +58,6 @@ def clean_java_tables():
     with allure.step("后置：删除本次用例产生的带标记的数据"):
         for table, field in CLEAN_TABLES.items():
             cur.execute(f"DELETE FROM {table} WHERE {field} LIKE %s", (f"{CLEAN_MARK}%",))
-            conn.commit()
+    conn.commit()
     cur.close()
     conn.close()

@@ -2,7 +2,7 @@ import logging
 import pytest
 
 from config.config import BASE_URL_JAVA, JAVA_DB
-from testunion.javaweb.conftest import get_session_p
+from testunion.javaweb.conftest import get_session_parallel
 from utils.analyse_case import analyse_case
 from utils.asserts import http_assert, jdbc_assert
 from utils.excel_utils import read_excel
@@ -19,11 +19,11 @@ data = read_excel(sheet_name="case5")
 class TestRunner:
 
 
-    @pytest.mark.usefixtures("clean_db_java_p")
+    @pytest.mark.usefixtures("clean_db_java_parallel")
     @pytest.mark.parametrize("case",data)
-    def test_case(self, case, get_session_p):
+    def test_case(self, case, get_session_parallel):
         extract ={}
-        extract.update(get_session_p)
+        extract.update(get_session_parallel)
         case = render_obj(case, extract)
         logging.info(f"渲染后的：   {case}")
 

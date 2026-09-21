@@ -9,7 +9,7 @@ from config.config import *
 
 @allure.step("2.发送HTTP请求")
 def send_http_request(**request_data):
-    session=request_data.pop("session")
+    session = request_data.pop("session", None)
     if isinstance(session,requests.Session):
         res=session.request(**request_data)
     else:

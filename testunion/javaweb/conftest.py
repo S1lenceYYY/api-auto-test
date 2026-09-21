@@ -8,7 +8,7 @@ def get_session():
     #串行,获取与角色相对应的session,并存入
 
 @pytest.fixture(scope="function")
-def get_session_p():
+def get_session_parallel():
     return create_java_sessions()
 
 @pytest.fixture(scope="session")
@@ -17,7 +17,7 @@ def clean_db_java():
     clean_java_tables()
 
 @pytest.fixture(scope="function")
-def clean_db_java_p():
+def clean_db_java_parallel():
     yield
     clean_java_tables()
 

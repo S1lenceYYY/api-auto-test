@@ -18,9 +18,9 @@ data = read_excel(sheet_name="case2")
 class TestRunnerParallel:
 
     @pytest.mark.parametrize("case", data)
-    def test_parallel_case(self, case, get_token_p, clean_db_by_id_p):
-        task_id_list = clean_db_by_id_p
-        extract = {"token": get_token_p}
+    def test_parallel_case(self, case, get_token_parallel, clean_db_by_id_parallel):
+        task_id_list = clean_db_by_id_parallel
+        extract = {"token": get_token_parallel}
         case = render_obj(case, extract)
 
         allure_init(case)
