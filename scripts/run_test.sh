@@ -16,14 +16,14 @@ log "------开始跑测试(模式:$MODE)------"
 
 if [ "$MODE" = "parallel" ]; then
     log "模式：并行（4 worker）"
-    pytest -m parallel -n 4 --alluredir ./report/json_parallel
-    allure generate ./report/json_parallel -o ./report/html_parallel --clean
-    REPORT_DIR="./report/html_parallel"
+    pytest -m parallel -n 4 --alluredir ./report/flask_parallel/json
+    allure generate ./report/flask_parallel/json -o ./report/flask_parallel/html --clean
+    REPORT_DIR="./report/flask_parallel/html"
 else
     log "模式：串行"
-    pytest -m serial --alluredir ./report/json_report
-    allure generate ./report/json_report -o ./report/html_report --clean
-    REPORT_DIR="./report/html_report"
+    pytest -m serial --alluredir ./report/flask_serial/json
+    allure generate ./report/flask_serial/json -o ./report/flask_serial/html --clean
+    REPORT_DIR="./report/flask_serial/html"
 fi
 
 

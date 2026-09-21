@@ -188,17 +188,17 @@ python run.py
 
 | 模式 | Allure 原始数据 | HTML 报告 |
 |------|-----------------|-----------|
-| 串行 | `report/json_report` | `report/html_report` |
-| 并行 | `report/json_parallel` | `report/html_parallel` |
+| 串行 | `/report/flask_serial/json` | `/report/flask_serial/html` |
+| 并行 | `/report/flask_parallel/json` | `/report/flask_parallel/html` |
 
 HTML 报告可直接用浏览器打开。如需临时启动服务查看：
 
 ```bash
 # 串行
-allure serve ./report/json_report
+allure serve ./report/flask_serial/json
 
 # 并行
-allure serve ./report/json_parallel
+allure serve ./report/flask_parallel/json
 ```
 
 ## 云端部署（阿里云 Ubuntu）
