@@ -10,7 +10,9 @@
 两套后端复用同一套 Excel 数据驱动、断言逻辑、Allure 报告能力，框架通过 `auth_utils` 抽象鉴权差异。
 
 ## 技术栈
-Python 3.11+ | Pytest | pytest-xdist | Allure-Pytest | Requests | Jinja2 | openpyxl | pymysql | Shell | Linux
+- **核心**：Python 3.11+ / Pytest / Requests
+- **扩展**：pytest-xdist（并行）/ Allure-Pytest（报告）/ Jinja2（动态渲染）/ openpyxl（Excel 驱动）/ pymysql（数据库断言）
+- **环境**：Linux / Shell / 阿里云 ECS
 
 ## 核心亮点
 - **数据驱动**：用例写在 Excel 中，按场景分 Sheet 维护，新增/修改用例无需改代码。
@@ -20,6 +22,9 @@ Python 3.11+ | Pytest | pytest-xdist | Allure-Pytest | Requests | Jinja2 | openp
 - **场景分层**：串行链路、独立正向+反向、边界异常三类用例分开维护，串行用例保证依赖，并行用例提升速度，边界用例展示测试设计。
 - **报告可视化**：接入 Allure，用例步骤、请求响应、SQL 断言详情都可在报告中追溯。
 - **云端部署 + 一键脚本**：部署至阿里云 Ubuntu，编写 Shell 脚本实现部署、测试自动化
+## 性能压测
+
+基于 JMeter 对 Flask 靶场完成10/50/100/150/200 并发阶梯压测，TPS 峰值约 115，拐点在 50 并发。详见 [jmeter/README.md](jmeter/README.md)。
 ## 项目结构
 
 ```text
@@ -64,6 +69,7 @@ jkzdh封装/                          # 源代码根目录 (F:\jkzdh封装)
 │   ├── extractor.py                # 响应提取：JSONPath / SQL / 参数
 │   ├── render_obj.py               # Jinja2 模板渲染
 │   └── send_request.py             # 发送 HTTP 请求
+├── jmeter                          # JMeter 性能压测（脚本 + HTML 报告）
 ├── .env                            # 实际环境变量文件 
 ├── .env.example                    # 环境变量模板
 ├── .gitignore                      # Git 忽略文件配置
