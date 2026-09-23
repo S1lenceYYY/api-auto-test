@@ -1,14 +1,7 @@
-import logging
 import pytest
-
 from config.config import FLASK_DB, BASE_URL
-from utils.allure_utils import allure_init
-from utils.extractor import json_extractor, jdbc_extractor, task_id_extractor
+from framework import BaseRunner
 from utils.excel_utils import read_excel
-from utils.send_request import send_http_request
-from utils.asserts import http_assert, jdbc_assert
-from utils.render_obj import render_obj
-from utils.analyse_case import analyse_case
 
 pytestmark = pytest.mark.parallel
 
@@ -18,20 +11,9 @@ data = read_excel(sheet_name="case2")
 class TestRunnerParallel:
 
     @pytest.mark.parametrize("case", data)
-    def test_parallel_case(self, case, get_token_parallel, clean_db_by_id_parallel):
+    def test_parallel_case(self, case, get_token_parallel, clean_db_by_id_parallel,parallel_context):
         task_id_list = clean_db_by_id_parallel
-        extract = {"token": get_token_parallel}
-        case = render_obj(case, extract)
-
-        allure_init(case)
-        logging.info(f"0.用例ID:{case['id']}  模块:{case['feature']}  场景:{case['story']}  标题:{case['title']}")
-
-        request_data = analyse_case(case,extract,BASE_URL)
-        resp = send_http_request(**request_data)
-        json_extractor(case, extract, resp)
-        jdbc_extractor(case, extract,FLASK_DB)
-        # 收集本用例产生的 ID，供后置清理
-        task_id_extractor(task_id_list, extract)
-
-        http_assert(case, resp, extract)
-        jdbc_assert(case, extract,FLASK_DB)
+        context=parallel_context
+        context.set("token",get_token_parallel)
+        runner=BaseRunner(case,context,task_id_list,BASE_URL,FLASK_DB)
+        runner.execute()

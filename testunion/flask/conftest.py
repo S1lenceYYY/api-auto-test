@@ -1,7 +1,6 @@
 
 import pytest
-
-from config.config import FLASK_DB
+from framework import Context
 from utils.auth_utils import create_flask_token, clean_db
 
 
@@ -33,3 +32,5 @@ def clean_db_by_id_parallel():
     task_id_list = []
     yield task_id_list
     clean_db(task_id_list)
+
+
