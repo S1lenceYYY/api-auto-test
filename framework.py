@@ -1,4 +1,4 @@
-#=========上下文=========#
+#=========上下文层=========#
 import logging
 
 from config.config import FLASK_DB, BASE_URL
@@ -51,7 +51,7 @@ class AssertionEngine:
         http_assert(case, resp, context.data)
         jdbc_assert(case, context.data, self.db_config)
 
-#=========组合层=========#
+#=========协调层=========#
 class BaseRunner:
     def __init__(self,case,context,task_id_list,base_url,db_config):
         self.case = case
