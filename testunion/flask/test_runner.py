@@ -13,6 +13,7 @@ from utils.send_request import send_http_request
 
 pytestmark = pytest.mark.serial
 
+
 data = read_excel(sheet_name="case1")
 
 @pytest.mark.flask

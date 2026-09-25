@@ -4,7 +4,7 @@ import subprocess
 # 串行：业务链路用例（存在数据依赖，不能并行）
 # 并行：无依赖独立接口用例，开启 xdist 多进程执行
 if __name__ == '__main__':
-    # ====================== Flask 串行 ======================
+    #====================== Flask 串行 ======================
     pytest.main([
         "-vs",
         "testunion/flask/test_runner.py",

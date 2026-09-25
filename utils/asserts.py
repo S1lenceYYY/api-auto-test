@@ -27,7 +27,6 @@ def http_assert(case, res, request_data=None):
         name="HTTP断言详情",
         attachment_type=allure.attachment_type.TEXT,
     )
-
     try:
         if check:
             result_list = jsonpath.jsonpath(res_json, check)
@@ -42,26 +41,26 @@ def http_assert(case, res, request_data=None):
             full_text = json.dumps(res_json, ensure_ascii=False)
             logging.info(f"4.HTTP响应: 预期({expect}) in 实际({full_text})")
             assert expect in full_text, (
-                f"文本包含校验失败：\n预期:{expect}不在响应结果内"
-            )
+                   f"文本包含校验失败：\n预期:{expect}不在响应结果内"
+                )
     except AssertionError as e:
-        if request_data:
+            if request_data:
+                allure.attach(
+                    json.dumps(request_data, ensure_ascii=False),
+                    name="请求参数",
+                    attachment_type=allure.attachment_type.JSON,
+                )
             allure.attach(
-                json.dumps(request_data, ensure_ascii=False),
-                name="请求参数",
+                json.dumps(res_json, ensure_ascii=False),
+                name="响应结果",
                 attachment_type=allure.attachment_type.JSON,
             )
-        allure.attach(
-            json.dumps(res_json, ensure_ascii=False),
-            name="响应结果",
-            attachment_type=allure.attachment_type.JSON,
-        )
-        allure.attach(
-            f"HTTP断言失败: {e}",
-            name="HTTP断言结果",
-            attachment_type=allure.attachment_type.TEXT,
-        )
-        raise e
+            allure.attach(
+                f"HTTP断言失败: {e}",
+                name="HTTP断言结果",
+                attachment_type=allure.attachment_type.TEXT,
+            )
+            raise e
 
 
 def jdbc_assert(case, extract,db_config):

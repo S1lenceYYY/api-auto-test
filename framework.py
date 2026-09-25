@@ -1,7 +1,5 @@
 #=========上下文层=========#
 import logging
-
-from config.config import FLASK_DB, BASE_URL
 from utils.allure_utils import allure_init
 from utils.render_obj import render_obj
 from utils.send_request import send_http_request
@@ -32,10 +30,10 @@ class HttpClient:
         request_data=analyse_case(case,context.data,self.base_url)
         resp=send_http_request(**request_data)
         request_data.pop("session", None)
-        return resp
+        return resp,request_data
 #=========提取层=========#
 class DataExtractor:
-    def __init__(self, db_config):  # ← 形参名统一叫 db_config
+    def __init__(self, db_config):
         self.db_config = db_config
     def extract(self,case,context,resp,task_id_list):
         json_extractor(case, context.data, resp)
@@ -45,10 +43,10 @@ class DataExtractor:
             task_id_extractor(task_id_list, context.data)
 #=========断言层=========#
 class AssertionEngine:
-    def __init__(self, db_config):  # ← 形参名统一叫 db_config
+    def __init__(self, db_config):
         self.db_config = db_config
-    def assert_all(self,case,context,resp):
-        http_assert(case, resp, context.data)
+    def assert_all(self,case,context,resp,request_data):
+        http_assert(case,resp, request_data)
         jdbc_assert(case, context.data, self.db_config)
 
 #=========协调层=========#
@@ -82,13 +80,13 @@ class BaseRunner:
         allure_init(rendered_case)
         logging.info(f"0.用例ID:{rendered_case['id']}  模块:{rendered_case['feature']}  场景:{rendered_case['story']}  标题:{rendered_case['title']}")
         # 3. 执行层：发请求
-        resp = self.http_client.send(rendered_case, self.context)
+        resp,request_data = self.http_client.send(rendered_case, self.context)
 
         # 4. 提取层：提取数据到 Context
         self.data_extractor.extract(rendered_case, self.context, resp, self.task_id_list)
 
         # 5. 断言层：断言
-        self.assert_engine.assert_all(rendered_case, self.context, resp)
+        self.assert_engine.assert_all(rendered_case, self.context, resp,request_data)
 
         # 6. 后置钩子
         self.teardown()
