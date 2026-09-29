@@ -5,7 +5,7 @@
 - **Flask 简易后端**：可控构造测试场景，验证框架基础能力；
 - **JavaWeb 学生成绩管理系统**：适配真实业务场景，覆盖多角色状态流转、越权鉴权等安全测试。
 
-> JavaWeb 后端的完整测试流程（抓包 → 接口分析 → 用例设计 → 框架适配 → 缺陷记录 → 回归用例）详见 [student-management-system](https://gitee.com/S1lenceYYY/student-management-system)。
+> JavaWeb 后端的完整测试流程（抓包 → 接口分析 → 用例设计 → 框架适配 → 缺陷记录 → 回归用例）详见 [student-management-system](https://github.com/S1lenceYYY/student-management-system)。
 
 两套后端复用同一套 Excel 数据驱动、断言逻辑和 Allure 报告能力。登录逻辑统一封装在 utils/auth_utils.py，串行与并行的差异仅通过 Fixture scope 控制。
 ## 技术栈
